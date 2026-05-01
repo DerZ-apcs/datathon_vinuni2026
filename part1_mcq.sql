@@ -93,16 +93,14 @@ ORDER BY avg(ord_per_cus) DESC
 LIMIT 1;
 
 -- 7C
--- doanh thu (revenue) = price * unit - discount?
 -- có cần ràng buộc bởi ord_status? 
--- geography (zip) -> orders (date/ zip/order_id) -> order_items (order_id, quantity*unit_price-discount_amount) ->
 SELECT * FROM sales;
 SELECT * FROM order_items;
 WITH RevenuePerOrder AS (
 	SELECT 
 		orders.zip,
         order_items.order_id,
-        SUM((order_items.quantity * order_items.unit_price - order_items.discount_amount)) AS rev_per_ord
+        SUM((order_items.quantity * order_items.unit_price)) AS rev_per_ord
 	FROM orders 
     INNER JOIN order_items ON order_items.order_id = orders.order_id
     WHERE orders.order_status IN ('delivered')
@@ -129,7 +127,6 @@ LIMIT 1;
 
 -- 9A
 -- rate = returns/total
-
 WITH ReturnedSize AS(
 	SELECT 
 		products.size,
@@ -156,11 +153,10 @@ ORDER BY return_rate DESC
 LIMIT 1;
 
 -- 10C
--- giá trị thanh toán = price*unit - discount?
 WITH PaymentPerOrder AS(
 	SELECT 
 		order_id,
-		SUM(quantity*unit_price-discount_amount) as payment_amount
+		SUM(quantity*unit_price) as payment_amount
 	FROM order_items
 	GROUP BY order_id
 )
